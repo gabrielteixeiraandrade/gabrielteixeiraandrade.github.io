@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leitor de QR Code com JS</title>
+    <title>Protótipo de Site/App de organização de gôndolas</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
@@ -29,7 +29,7 @@
 </head>
 <body>
 
-    <h1>Escanear QR Code</h1>
+    <h1>Escanear Código de Barras</h1>
     
     <div id="reader"></div>
     
@@ -39,13 +39,13 @@
         // Quando a leitura for bem-sucedida
         function onScanSuccess(decodedText, decodedResult) {
             // Mostra o resultado na tela
-            document.getElementById('resultado').innerText = "QR Code Lido: " + decodedText;
+            document.getElementById('resultado').innerText = "Código de Barras Lido: " + decodedText;
             
             // Opcional: Se for um link, você pode redirecionar o usuário:
             // window.location.href = decodedText;
 
             // Para parar o scanner após ler uma vez, descomente a linha abaixo:
-            // html5QrcodeScanner.clear();
+             html5QrcodeScanner.clear();
         }
 
         // Quando houver erro de leitura (geralmente ignora, pois ele tenta ler a cada milissegundo)
@@ -57,8 +57,8 @@
         let html5QrcodeScanner = new Html5QrcodeScanner(
             "reader", // ID do elemento HTML acima
             { 
-                fps: 10,       // Quadros por segundo (velocidade)
-                qrbox: { width: 250, height: 250 } // Tamanho do quadrado de foco
+                fps: 2,       // Quadros por segundo (velocidade)
+                qrbox: { width: 500, height: 250 } // Tamanho do quadrado de foco
             }, 
             /* verbose= */ false
         );
