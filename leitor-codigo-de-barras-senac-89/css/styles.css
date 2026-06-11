@@ -1,0 +1,83 @@
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#f4f4f9;
+    color:#333;
+    margin:0;
+    padding:20px;
+    text-align:center;
+}
+
+h1{
+    color:#2c3e50;
+    margin-bottom:5px;
+}
+
+.sub{
+    color:#7f8c8d;
+    margin-bottom:25px;
+}
+
+#btn-iniciar{
+    background:#27ae60;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+#btn-iniciar:hover{
+    background:#219150;
+}
+
+#codigoManual{
+    width:100%;
+    max-width:350px;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+#btn-confirmar{
+    background:#3498db;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+#btn-confirmar:hover{
+    background:#2980b9;
+}
+
+#reader{
+    width:100%;
+    max-width:450px;
+    margin:25px auto;
+    border-radius:12px;
+    overflow:hidden;
+    border:2px solid #ddd;
+    background:white;
+    display:none;
+}
+
+#mensagem{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.erro{
+    color:#e74c3c;
+}
+
+.sucesso{
+    color:#27ae60;
+}
