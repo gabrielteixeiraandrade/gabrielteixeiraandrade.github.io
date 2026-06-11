@@ -6,13 +6,8 @@ const bancoDeDadosProdutos = {
     },
 
     "7891152801842": {
-        nome: "Biscoito recheado Escureto",
-        pagina: "produtos/produto1.html"
-    },
-
-    "7891111111111": {
-        nome: "Produto Exemplo 2",
-        pagina: "produtos/produto2.html"
+        nome: "Biscoito Recheado Richester Escureto 125g",
+        pagina: "produtos/teste.html"
     }
 
-};	
+};
