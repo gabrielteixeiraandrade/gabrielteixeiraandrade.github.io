@@ -1,69 +1,633 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eco-Man Arcade</title>
+    <style>
+        :root {
+            --bg-color: #111;
+            --text-color: #fff;
+            --accent-color: #2196F3;
+        }
 
-<meta charset="UTF-8">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-<title>
-Verificador de Produto
-</title>
+        /* Container principal reduzido para ajustar tudo na tela do celular */
+        #game-container {
+            position: relative;
+            width: 448px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            border: 4px solid #333;
+        }
 
-<link
-rel="stylesheet"
-href="css/style.css">
+        canvas {
+            display: block;
+            width: 448px;
+            height: 576px;
+            image-rendering: pixelated;
+            background: #000;
+        }
 
-<script
-src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js">
-</script>
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 576px; /* Fixado no tamanho do canvas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
 
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            color: #4CAF50;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0px #000, 5px 5px 0px var(--accent-color);
+            letter-spacing: 2px;
+        }
+
+        .btn {
+            background: #222;
+            color: #fff;
+            border: 2px solid var(--accent-color);
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 6px;
+            font-family: inherit;
+            transition: 0.2s;
+            text-transform: uppercase;
+            box-shadow: 3px 3px 0px var(--accent-color);
+        }
+
+        .btn:hover {
+            background: var(--accent-color);
+            color: #000;
+            box-shadow: 1px 1px 0px #fff;
+            transform: translate(2px, 2px);
+        }
+
+        .highscore {
+            color: #FFEB3B;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        #about-screen p {
+            font-size: 0.85rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        #gameover-screen {
+            background: rgba(60, 0, 0, 0.95);
+            border-bottom: 4px solid #F44336;
+        }
+
+        #gameover-screen h2 {
+            color: #F44336;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 4px solid #FFEB3B;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            color: #ddd;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        /* Área dedicada aos controles abaixo do Canvas */
+        #mobile-controls {
+            width: 100%;
+            background: #111;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 2px solid #333;
+        }
+
+        .control-row {
+            display: flex;
+        }
+
+        .btn-dir {
+            width: 55px;
+            height: 55px;
+            margin: 4px;
+            background: #222;
+            border: 2px solid var(--accent-color);
+            color: white;
+            font-size: 1.6rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-dir:active {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(0.95);
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>
-Verificador de Produto
-</h1>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="448" height="576"></canvas>
 
-<p class="sub">
-Leia ou digite um código de barras
-</p>
+        <div id="menu-screen" class="screen">
+            <h1>ECO-MAN</h1>
+            <p style="color: #4CAF50; font-weight: bold; margin-bottom: 5px;">ARCADE EDITION</p>
+            <div class="highscore">RECORDE: <span id="menu-highscore">0</span> PT</div>
+            
+            <button class="btn" id="btn-start">Iniciar Jogo</button>
+            <button class="btn" id="btn-about">Sobre / Regras</button>
+        </div>
 
-<button id="btn-iniciar">
-Iniciar Scanner
-</button>
+        <div id="about-screen" class="screen hidden">
+            <h2 style="color: #2196F3; margin-bottom: 15px;">Instruções Técnicas</h2>
+            <div style="max-height: 360px; overflow-y: auto; padding: 0 10px; margin-bottom: 15px;">
+                <p><strong>Objetivo:</strong> Colete os resíduos no labirinto e deposite-os na lixeira correta no topo da tela.</p>
+                <p><strong>Lixeiras:</strong> Azul (Papel 🧻), Vermelho (Plástico 🥤), Verde (Vidro 🍾), Amarelo (Metal 🥫).</p>
+                <p><strong>Regra de Carga:</strong> Você só pode carregar 1 lixo por vez. Errar a lixeira consome 1 vida.</p>
+                <p><strong>Inimigos:</strong><br>
+                <span style="color: #9C27B0;">■ Roxo:</span> Deixa entulho temporário no caminho.<br>
+                <span style="color: #FF9800;">■ Laranja:</span> Atordoa e embaralha a ordem das lixeiras.<br>
+                <span style="color: #F44336;">■ Vermelho:</span> Persegue você se você entrar no raio de 10 blocos.</p>
+                <p><strong>Controles:</strong> Use as setas físicas abaixo, o teclado ou Deslize (Swipe) na tela.</p>
+            </div>
+            <button class="btn" id="btn-back">Voltar ao Menu</button>
+        </div>
 
-<br><br>
+        <div id="gameover-screen" class="screen hidden">
+            <h2>GAME OVER</h2>
+            <p>Pontuação Final: <span id="final-score" style="color: #FFEB3B; font-weight: bold;">0</span> pontos</p>
+            <div id="new-record-msg" style="color: #4CAF50; font-weight: bold; margin-top: 5px;" class="hidden">¡NOVO RECORDE GLOBAL!</div>
+            
+            <div class="fact-box">
+                <strong>Fato Ecológico:</strong><br>
+                <span id="ecofact-text">Carregando conscientização...</span>
+            </div>
 
-<input
-type="text"
-id="codigoManual"
-placeholder="Leia ou digite o código de barras"
-autocomplete="off">
+            <button class="btn" id="btn-restart">Jogar Novamente</button>
+            <button class="btn" id="btn-to-menu" style="border-color: #e91e63;">Menu Inicial</button>
+        </div>
 
-<br><br>
+        <div id="mobile-controls">
+            <button class="btn-dir" id="v-up">↑</button>
+            <div class="control-row">
+                <button class="btn-dir" id="v-left">←</button>
+                <button class="btn-dir" id="v-down">↓</button>
+                <button class="btn-dir" id="v-right">→</button>
+            </div>
+        </div>
+    </div>
 
-<button id="btn-confirmar">
-Confirmar
-</button>
+    <script>
+        // --- CONFIGURAÇÕES GERAIS ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-<div id="mensagem"></div>
+        const TILE_SIZE = 16;
+        const MAP_ROWS = 31;
+        const MAP_COLS = 28;
 
-<div id="scanner-container">
+        const STATES = { MENU: 'MENU', ABOUT: 'ABOUT', PLAYING: 'PLAYING', GAMEOVER: 'GAMEOVER' };
+        let gameState = STATES.MENU;
 
-    <div id="reader"></div>
+        let score = 0;
+        let highscore = parseInt(localStorage.getItem('ecoman_highscore')) || 0;
+        let lives = 3;
 
-    <button id="btn-fechar-scanner">
-        Fechar Scanner
-    </button>
+        const ecoFacts = [
+            "O plástico pode levar mais de 450 anos para se decompor totalmente no meio ambiente.",
+            "Reciclar uma tonelada de papel poupa cerca de 20 árvores e 10 mil litros de água.",
+            "O vidro é 100% reciclável e pode ser derretido e reutilizado infinitas vezes sem perder qualidade.",
+            "A reciclagem de uma única lata de alumínio economiza energia suficiente para manter uma TV ligada por 3 horas.",
+            "Mais de 8 milhões de toneladas de plástico acabam nos oceanos todos os anos, ameaçando a vida marinha."
+        ];
 
-</div>
+        const MATERIALS = {
+            PAPEL:   { id: 0, label: 'PAPEL',    color: '#2196F3', emoji: '🧻' },
+            PLASTICO:{ id: 1, label: 'PLÁSTICO', color: '#F44336', emoji: '🥤' },
+            VIDRO:   { id: 2, label: 'VIDRO',    color: '#4CAF50', emoji: '🍾' },
+            METAL:   { id: 3, label: 'METAL',    color: '#FFEB3B', emoji: '🥫' }
+        };
+        const materialKeys = ['PAPEL', 'PLASTICO', 'VIDRO', 'METAL'];
+        let binOrder = ['PAPEL', 'PLASTICO', 'VIDRO', 'METAL'];
 
-<script src="js/produtos.js"></script>
-<script src="js/scanner.js"></script>
+        // --- MATRIZ DO MAPA ---
+        // Você pode alterar livremente a posição dos números aqui para remodelar o jogo!
+        let map = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1], 
+            [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
+            [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1],
+            [1,0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,1,1,1,6,6,1,1,1,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,1,6,6,6,6,6,6,1,0,1,1,0,1,1,1,1,1,1],
+            [0,0,0,0,0,0,0,0,0,0,1,6,6,6,6,6,6,1,0,0,0,0,0,0,0,0,0,0], 
+            [1,1,1,1,1,1,0,1,1,0,1,6,6,6,6,6,6,1,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1],
+            [1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
+            [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
+            [1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1],
+            [1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1],
+            [1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1],
+            [1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
 
+        let activeDebris = [];
+
+        // --- CLASSES DAS ENTIDADES ---
+        class Player {
+            constructor() { this.reset(); }
+            reset() {
+                this.gridX = 14; this.gridY = 23;
+                this.x = this.gridX * TILE_SIZE; this.y = this.gridY * TILE_SIZE;
+                this.targetX = this.x; this.targetY = this.y;
+                this.speed = 2; this.dirX = 0; this.dirY = 0;
+                this.nextDirX = 0; this.nextDirY = 0; this.angle = 0;
+                this.cargo = null; this.invincibleFrames = 0; this.stunnedFrames = 0;
+            }
+            update() {
+                if (this.invincibleFrames > 0) this.invincibleFrames--;
+                if (this.stunnedFrames > 0) { this.stunnedFrames--; return; }
+
+                if (this.x === this.targetX && this.y === this.targetY) {
+                    this.gridX = Math.round(this.x / TILE_SIZE);
+                    this.gridY = Math.round(this.y / TILE_SIZE);
+
+                    if (this.gridY === 1 && this.cargo) { this.checkDeposit(); }
+
+                    if (this.canMove(this.nextDirX, this.nextDirY)) {
+                        this.dirX = this.nextDirX; this.dirY = this.nextDirY;
+                    } else if (!this.canMove(this.dirX, this.dirY)) {
+                        this.dirX = 0; this.dirY = 0;
+                    }
+                    this.targetX = this.x + this.dirX * TILE_SIZE;
+                    this.targetY = this.y + this.dirY * TILE_SIZE;
+
+                    if (this.dirX > 0) this.angle = 0;
+                    if (this.dirX < 0) this.angle = Math.PI;
+                    if (this.dirY > 0) this.angle = Math.PI / 2;
+                    if (this.dirY < 0) this.angle = -Math.PI / 2;
+                }
+                if (this.x !== this.targetX || this.y !== this.targetY) {
+                    this.x += this.dirX * this.speed; this.y += this.dirY * this.speed;
+                }
+                if (this.x < 0) { this.x = (MAP_COLS - 1) * TILE_SIZE; this.targetX = this.x; }
+                else if (this.x >= MAP_COLS * TILE_SIZE) { this.x = 0; this.targetX = this.x; }
+            }
+            canMove(dx, dy) {
+                let nextG_X = Math.round((this.x + dx * TILE_SIZE) / TILE_SIZE);
+                let nextG_Y = Math.round((this.y + dy * TILE_SIZE) / TILE_SIZE);
+                if (nextG_Y === 13 && (nextG_X < 0 || nextG_X >= MAP_COLS)) return true;
+                if (nextG_X < 0 || nextG_X >= MAP_COLS || nextG_Y < 0 || nextG_Y >= MAP_ROWS) return false;
+                let tile = map[nextG_Y][nextG_X];
+                return (tile !== 1 && tile !== 6 && tile !== 7);
+            }
+            checkDeposit() {
+                let binIndex = Math.floor(this.gridX / 7);
+                binIndex = Math.max(0, Math.min(3, binIndex));
+                let binMaterialKey = binOrder[binIndex];
+                if (this.cargo.key === binMaterialKey) {
+                    score += 10; this.cargo = null; spawnTrashItem();
+                } else {
+                    lives--; this.invincibleFrames = 120; this.cargo = null;
+                    if (lives <= 0) changeState(STATES.GAMEOVER);
+                }
+            }
+            draw() {
+                if (this.invincibleFrames % 4 > 2) return;
+                ctx.save();
+                ctx.translate(this.x + TILE_SIZE/2, this.y + TILE_SIZE/2);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = this.stunnedFrames > 0 ? '#FF9800' : '#4CAF50';
+                ctx.beginPath(); ctx.arc(0, 0, TILE_SIZE/2, 0.2 * Math.PI, 1.8 * Math.PI);
+                ctx.lineTo(0,0); ctx.fill();
+                ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(2, -4, 2, 0, 2 * Math.PI); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Monster {
+            constructor(type, startX, startY, color) {
+                this.type = type; this.startX = startX; this.startY = startY; this.color = color;
+                this.reset();
+            }
+            reset() {
+                this.gridX = this.startX; this.gridY = this.startY;
+                this.x = this.gridX * TILE_SIZE; this.y = this.gridY * TILE_SIZE;
+                this.targetX = this.x; this.targetY = this.y;
+                this.speed = 1; this.dirX = 0; this.dirY = -1; this.alertMode = false;
+            }
+            update(player) {
+                if (this.x === this.targetX && this.y === this.targetY) {
+                    this.gridX = Math.round(this.x / TILE_SIZE);
+                    this.gridY = Math.round(this.y / TILE_SIZE);
+
+                    if (this.type === 'ROXO' && map[this.gridY][this.gridX] === 0 && Math.random() < 0.05) {
+                        map[this.gridY][this.gridX] = 7;
+                        activeDebris.push({ x: this.gridX, y: this.gridY, timer: 240 });
+                    }
+
+                    let validDirs = this.getValidDirections();
+                    if (validDirs.length > 0) {
+                        let chosen = validDirs[0];
+                        if (this.type === 'VERMELHO') {
+                            let dist = Math.abs(this.gridX - player.gridX) + Math.abs(this.gridY - player.gridY);
+                            if (dist <= 10) {
+                                this.alertMode = true;
+                                let bestDir = chosen, minDist = 99999;
+                                for (let d of validDirs) {
+                                    let mDist = Math.abs((this.gridX + d.x) - player.gridX) + Math.abs((this.gridY + d.y) - player.gridY);
+                                    if (mDist < minDist) { minDist = mDist; bestDir = d; }
+                                }
+                                chosen = bestDir;
+                            } else { this.alertMode = false; chosen = validDirs[Math.floor(Math.random() * validDirs.length)]; }
+                        } else { chosen = validDirs[Math.floor(Math.random() * validDirs.length)]; }
+                        this.dirX = chosen.x; this.dirY = chosen.y;
+                    } else { this.dirX *= -1; this.dirY *= -1; }
+                    this.targetX = this.x + this.dirX * TILE_SIZE; this.targetY = this.y + this.dirY * TILE_SIZE;
+                }
+                this.x += this.dirX * this.speed; this.y += this.dirY * this.speed;
+                this.checkCollision(player);
+            }
+            getValidDirections() {
+                let dirs = [{x: 0, y: -1}, {x: 0, y: 1}, {x: -1, y: 0}, {x: 1, y: 0}], valid = [];
+                for (let d of dirs) {
+                    if (d.x === -this.dirX && d.y === -this.dirY) continue;
+                    let nx = this.gridX + d.x, ny = this.gridY + d.y;
+                    if (nx >= 0 && nx < MAP_COLS && ny >= 0 && ny < MAP_ROWS) {
+                        if (map[ny][nx] === 0 || map[ny][nx] === 6) valid.push(d);
+                    }
+                }
+                if (valid.length === 0) valid.push({x: -this.dirX, y: -this.dirY});
+                return valid;
+            }
+            checkCollision(player) {
+                let pDist = Math.abs(this.x - player.x) + Math.abs(this.y - player.y);
+                if (pDist < 12) {
+                    if (this.type === 'LARANJA') {
+                        if (player.stunnedFrames === 0) { player.stunnedFrames = 60; shuffleBins(); }
+                    } else if (player.invincibleFrames === 0) {
+                        lives--; player.invincibleFrames = 120; player.reset();
+                        if (lives <= 0) changeState(STATES.GAMEOVER);
+                    }
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x + TILE_SIZE/2, this.y + TILE_SIZE/2 - 2, TILE_SIZE/2, Math.PI, 0, false);
+                ctx.lineTo(this.x + TILE_SIZE, this.y + TILE_SIZE);
+                ctx.lineTo(this.x + TILE_SIZE * 0.75, this.y + TILE_SIZE * 0.85);
+                ctx.lineTo(this.x + TILE_SIZE * 0.5, this.y + TILE_SIZE);
+                ctx.lineTo(this.x + TILE_SIZE * 0.25, this.y + TILE_SIZE * 0.85);
+                ctx.lineTo(this.x, this.y + TILE_SIZE); ctx.closePath(); ctx.fill();
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(this.x + 5, this.y + 6, 2.5, 0, 2*Math.PI); ctx.arc(this.x + 11, this.y + 6, 2.5, 0, 2*Math.PI); ctx.fill();
+                if (this.type === 'VERMELHO' && this.alertMode) { ctx.fillStyle = '#FF0000'; ctx.font = 'bold 14px Courier New'; ctx.fillText('!', this.x + 5, this.y - 4); }
+            }
+        }
+
+        // --- ENGINE DE CONTROLE DE RESÍDUOS ---
+        let trashItems = [];
+        function spawnTrashItem() {
+            let placed = false, attempts = 0;
+            while (!placed && attempts < 200) {
+                let rx = Math.floor(Math.random() * MAP_COLS), ry = Math.floor(Math.random() * MAP_ROWS);
+                attempts++;
+                if (map[ry][rx] === 0 && ry > 2) {
+                    if (!trashItems.some(item => item.gridX === rx && item.gridY === ry)) {
+                        let randomKey = materialKeys[Math.floor(Math.random() * materialKeys.length)];
+                        trashItems.push({ gridX: rx, gridY: ry, x: rx * TILE_SIZE, y: ry * TILE_SIZE, key: randomKey, data: MATERIALS[randomKey] });
+                        placed = true;
+                    }
+                }
+            }
+        }
+        function initTrashSpawns() { trashItems = []; for (let i = 0; i < 4; i++) spawnTrashItem(); }
+        function checkTrashCollection(player) {
+            for (let i = trashItems.length - 1; i >= 0; i--) {
+                if (player.gridX === trashItems[i].gridX && player.gridY === trashItems[i].gridY && !player.cargo) {
+                    player.cargo = trashItems[i]; trashItems.splice(i, 1);
+                }
+            }
+        }
+        function shuffleBins() {
+            for (let i = binOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [binOrder[i], binOrder[j]] = [binOrder[j], binOrder[i]];
+            }
+        }
+
+        const player = new Player();
+        const monsters = [
+            new Monster('ROXO', 13, 13, '#9C27B0'),
+            new Monster('LARANJA', 14, 13, '#FF9800'),
+            new Monster('VERMELHO', 14, 12, '#F44336')
+        ];
+
+        // --- MÁQUINA DE ESTADOS (MAIS ESTÁVEL) ---
+        function changeState(newState) {
+            gameState = newState;
+            
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('about-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+
+            if (gameState === STATES.MENU) {
+                document.getElementById('menu-screen').classList.remove('hidden');
+                document.getElementById('menu-highscore').innerText = highscore;
+            } else if (gameState === STATES.ABOUT) {
+                document.getElementById('about-screen').classList.remove('hidden');
+            } else if (gameState === STATES.PLAYING) {
+                resetGameSession();
+            } else if (gameState === STATES.GAMEOVER) {
+                document.getElementById('gameover-screen').classList.remove('hidden');
+                document.getElementById('final-score').innerText = score;
+                if (score > highscore) {
+                    highscore = score; localStorage.setItem('ecoman_highscore', highscore);
+                    document.getElementById('new-record-msg').classList.remove('hidden');
+                } else { document.getElementById('new-record-msg').classList.add('hidden'); }
+                document.getElementById('ecofact-text').innerText = ecoFacts[Math.floor(Math.random() * ecoFacts.length)];
+            }
+        }
+
+        function resetGameSession() {
+            score = 0; lives = 3; binOrder = ['PAPEL', 'PLASTICO', 'VIDRO', 'METAL'];
+            for (let r = 0; r < MAP_ROWS; r++) {
+                for (let c = 0; c < MAP_COLS; c++) { if (map[r][c] === 7) map[r][c] = 0; }
+            }
+            activeDebris = []; player.reset();
+            for (let m of monsters) m.reset();
+            initTrashSpawns();
+        }
+
+        // --- EVENTOS E INPUTS CONTÍNUOS ---
+        function handleInputDirection(dx, dy) {
+            if (gameState !== STATES.PLAYING) return;
+            player.nextDirX = dx; player.nextDirY = dy;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp')    handleInputDirection(0, -1);
+            if (e.key === 'ArrowDown')  handleInputDirection(0, 1);
+            if (e.key === 'ArrowLeft')  handleInputDirection(-1, 0);
+            if (e.key === 'ArrowRight') handleInputDirection(1, 0);
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
+        });
+
+        // Eventos das setas mapeados diretamente
+        document.getElementById('v-up').addEventListener('touchstart', (e) => { e.preventDefault(); handleInputDirection(0, -1); });
+        document.getElementById('v-down').addEventListener('touchstart', (e) => { e.preventDefault(); handleInputDirection(0, 1); });
+        document.getElementById('v-left').addEventListener('touchstart', (e) => { e.preventDefault(); handleInputDirection(-1, 0); });
+        document.getElementById('v-right').addEventListener('touchstart', (e) => { e.preventDefault(); handleInputDirection(1, 0); });
+        
+        document.getElementById('v-up').addEventListener('click', () => handleInputDirection(0, -1));
+        document.getElementById('v-down').addEventListener('click', () => handleInputDirection(0, 1));
+        document.getElementById('v-left').addEventListener('click', () => handleInputDirection(-1, 0));
+        document.getElementById('v-right').addEventListener('click', () => handleInputDirection(1, 0));
+
+        // Mecânica Swipe Otimizada
+        let touchStartX = 0, touchStartY = 0;
+        window.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].clientX; touchStartY = e.changedTouches[0].clientY; }, { passive: true });
+        window.addEventListener('touchend', (e) => {
+            let diffX = e.changedTouches[0].clientX - touchStartX;
+            let diffY = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(diffX) > 20 || Math.abs(diffY) > 20) {
+                if (Math.abs(diffX) > Math.abs(diffY)) { handleInputDirection(diffX > 0 ? 1 : -1, 0); }
+                else { handleInputDirection(0, diffY > 0 ? 1 : -1); }
+            }
+        }, { passive: true });
+
+        // Conexões de botões das interfaces
+        document.getElementById('btn-start').onclick = () => changeState(STATES.PLAYING);
+        document.getElementById('btn-about').onclick = () => changeState(STATES.ABOUT);
+        document.getElementById('btn-back').onclick = () => changeState(STATES.MENU);
+        document.getElementById('btn-restart').onclick = () => changeState(STATES.PLAYING);
+        document.getElementById('btn-to-menu').onclick = () => changeState(STATES.MENU);
+
+        // --- SISTEMA DE RENDERIZAÇÃO ---
+        function updateDebris() {
+            for (let i = activeDebris.length - 1; i >= 0; i--) {
+                activeDebris[i].timer--;
+                if (activeDebris[i].timer <= 0) { map[activeDebris[i].y][activeDebris[i].x] = 0; activeDebris.splice(i, 1); }
+            }
+        }
+
+        function drawMap() {
+            for (let r = 0; r < MAP_ROWS; r++) {
+                for (let c = 0; c < MAP_COLS; c++) {
+                    let tile = map[r][c];
+                    if (tile === 1) {
+                        ctx.fillStyle = '#1A237E'; ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = '#303F9F'; ctx.strokeRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    } else if (tile === 6) {
+                        ctx.fillStyle = '#111'; ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    } else if (tile === 7) {
+                        ctx.fillStyle = '#7B1FA2'; ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        ctx.fillStyle = '#E040FB'; ctx.font = '10px Courier New'; ctx.fillText('X', c * TILE_SIZE + 4, r * TILE_SIZE + 12);
+                    }
+                }
+            }
+            for (let i = 0; i < 4; i++) {
+                let cfg = MATERIALS[binOrder[i]];
+                ctx.fillStyle = cfg.color; ctx.fillRect(i * 7 * TILE_SIZE, 1 * TILE_SIZE, 7 * TILE_SIZE, TILE_SIZE);
+                ctx.fillStyle = '#000'; ctx.font = 'bold 9px Arial'; ctx.fillText(cfg.emoji + ' ' + cfg.label, i * 7 * TILE_SIZE + 10, 1 * TILE_SIZE + 12);
+            }
+        }
+
+        function drawHUD() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 500, canvas.width, 76);
+            ctx.strokeStyle = '#2196F3'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 500); ctx.lineTo(canvas.width, 500); ctx.stroke();
+            ctx.fillStyle = '#FFF'; ctx.font = 'bold 16px "Courier New"'; ctx.fillText(`PONTOS: ${score}`, 15, 528);
+            let heartStr = ''; for (let i = 0; i < lives; i++) heartStr += '❤️'; ctx.fillText(heartStr, 340, 528);
+            let cargoTxt = 'CARGA: NENHUMA';
+            if (player.cargo) { ctx.fillStyle = player.cargo.data.color; cargoTxt = `CARGA: ${player.cargo.data.emoji} ${player.cargo.data.label}`; }
+            else { ctx.fillStyle = '#888'; }
+            ctx.font = 'bold 14px "Courier New"'; ctx.textAlign = 'center'; ctx.fillText(cargoTxt, canvas.width / 2, 558); ctx.textAlign = 'left';
+        }
+
+        function loop() {
+            if (gameState === STATES.PLAYING) {
+                player.update(); updateDebris();
+                for (let m of monsters) m.update(player);
+                checkTrashCollection(player);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawMap();
+                for (let trash of trashItems) { ctx.fillStyle = trash.data.color; ctx.font = '14px Courier New'; ctx.fillText(trash.data.emoji, trash.x + 1, trash.y + 13); }
+                player.draw();
+                for (let m of monsters) m.draw();
+                drawHUD();
+            }
+            requestAnimationFrame(loop);
+        }
+
+        changeState(STATES.MENU);
+        requestAnimationFrame(loop);
+    </script>
 </body>
 </html>

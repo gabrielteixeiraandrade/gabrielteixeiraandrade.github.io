@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Verificador de Produto
+</title>
+
+<link
+rel="stylesheet"
+href="css/style.css">
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js">
+</script>
+
+</head>
+
+<body>
+
+<h1>
+Verificador de Produto
+</h1>
+
+<p class="sub">
+Leia ou digite um código de barras
+</p>
+
+<button id="btn-iniciar">
+Iniciar Scanner
+</button>
+
+<br><br>
+
+<input
+type="text"
+id="codigoManual"
+placeholder="Leia ou digite o código de barras"
+autocomplete="off">
+
+<br><br>
+
+<button id="btn-confirmar">
+Confirmar
+</button>
+
+<div id="mensagem"></div>
+
+<div id="scanner-container">
+
+    <div id="reader"></div>
+
+    <button id="btn-fechar-scanner">
+        Fechar Scanner
+    </button>
+
+</div>
+
+<script src="js/produtos.js"></script>
+<script src="js/scanner.js"></script>
+
+</body>
+</html>
