@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
+
 <meta
 name="viewport"
 content="width=device-width, initial-scale=1.0">
 
 <title>
-Leitor de Código de Barras
+Verificador de Produto
 </title>
 
 <link
@@ -39,7 +41,8 @@ Iniciar Scanner
 <input
 type="text"
 id="codigoManual"
-placeholder="Digite o código de barras">
+placeholder="Leia ou digite o código de barras"
+autocomplete="off">
 
 <br><br>
 
@@ -49,12 +52,18 @@ Confirmar
 
 <div id="mensagem"></div>
 
-<div id="reader"></div>
+<div id="scanner-container">
+
+    <div id="reader"></div>
+
+    <button id="btn-fechar-scanner">
+        Fechar Scanner
+    </button>
+
+</div>
 
 <script src="js/produtos.js"></script>
-
 <script src="js/scanner.js"></script>
 
 </body>
-
 </html>
