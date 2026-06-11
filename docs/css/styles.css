@@ -3,6 +3,10 @@
 }
 
 body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
     background:#f4f4f9;
     color:#333;
@@ -12,16 +16,28 @@ body{
 }
 
 h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     color:#2c3e50;
     margin-bottom:5px;
 }
 
 .sub{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     color:#7f8c8d;
     margin-bottom:25px;
 }
 
 #btn-iniciar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     background:#27ae60;
     color:white;
     border:none;
@@ -36,6 +52,10 @@ h1{
 }
 
 #codigoManual{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     width:100%;
     max-width:350px;
     padding:12px;
@@ -45,6 +65,10 @@ h1{
 }
 
 #btn-confirmar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     background:#3498db;
     color:white;
     border:none;
@@ -59,6 +83,10 @@ h1{
 }
 
 #reader{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100hv;
     width:100%;
     max-width:450px;
     margin:25px auto;
